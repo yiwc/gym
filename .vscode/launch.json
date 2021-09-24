@@ -1,0 +1,26 @@
+{
+    "version":"0.2.0",
+    "configurations": [
+        {
+            "name":"Launch Python",
+            "type":"python",
+            "request": "launch",
+            "program":"${file}",
+            "console": "integratedTerminal",
+            "python":"python3"
+        },
+        {
+            "name": "PyTest",
+            "type":"python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "python": "python3",
+            "module":"pytest",
+            "args":[
+                "tests/test_scripts"
+            ],
+            "cwd":"${workspaceFolder}",
+            "env":{}
+        }
+    ]
+}

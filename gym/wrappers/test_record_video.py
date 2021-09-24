@@ -13,6 +13,7 @@ from gym.wrappers import (
 def test_record_video_using_default_trigger():
 
     env = gym.make("CartPole-v1")
+    
     env = gym.wrappers.RecordVideo(env, "videos")
     env.reset()
     for _ in range(199):
@@ -26,7 +27,7 @@ def test_record_video_using_default_trigger():
     assert len(mp4_files) == sum(
         [capped_cubic_video_schedule(i) for i in range(env.episode_id + 1)]
     )
-    shutil.rmtree("videos")
+    shutil.rmtree("videos",ignore_errors=True)
 
 
 def test_record_video_step_trigger():

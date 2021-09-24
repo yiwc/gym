@@ -6,8 +6,11 @@ import argparse
 
 from gym.envs.tests.spec_list import should_skip_env_spec_for_tests
 from gym.envs.tests.test_envs_semantics import generate_rollout_hash, hash_object
+import pathlib
+import gym
+DATA_DIR=pathlib.Path(gym.__path__[0]).joinpath("envs/tests")
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, "gym", "envs", "tests")
+# DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, "gym", "envs", "tests")
 ROLLOUT_STEPS = 100
 episodes = ROLLOUT_STEPS
 steps = ROLLOUT_STEPS

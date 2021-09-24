@@ -7,6 +7,10 @@ from setuptools import find_packages, setup
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "gym"))
 from version import VERSION
 
+import subprocess
+result = subprocess.run(['apt','list','--installed'], stdout=subprocess.PIPE)
+assert 'ffmpeg' in str(result.stdout), "ffmp not install, try: sudo apt-get install ffmpeg"
+
 # Environment-specific dependencies.
 extras = {
     "atari": ["ale-py~=0.7"],
@@ -45,6 +49,7 @@ setup(
         "numpy>=1.18.0",
         "cloudpickle>=1.2.0",
         "importlib_metadata>=4.8.1; python_version < '3.8'",
+        "pyglet"
     ],
     extras_require=extras,
     package_data={
