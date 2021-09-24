@@ -1,0 +1,1 @@
+python ./scripts/manual_control.py --env MiniGrid-KeyCorridorS4R3-v0

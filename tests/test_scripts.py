@@ -17,6 +17,9 @@ assert TARGET_SCRIPTS_FOLDER.exists()
 p = TARGET_SCRIPTS_FOLDER.glob('**/*')
 files = files+[x for x in p if x.is_file()]
 
+files=list(filter(lambda x: "manual_control" not in x.__str__(), files))
+files=list(filter(lambda x: ".sh" not in x.__str__(), files))
+
 @pytest.mark.parametrize("name", files)
 def test_script(name):
     print(name)

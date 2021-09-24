@@ -805,3 +805,55 @@ register(
     entry_point="gym.envs.unittest:MemorizeDigits",
     reward_threshold=20,
 )
+
+# Minigrid
+
+register(
+    id='MiniGrid-KeyCorridorS3R1-v0',
+    entry_point='gym.envs.minigrid.envs:KeyCorridorS3R1'
+)
+
+register(
+    id='MiniGrid-KeyCorridorS3R2-v0',
+    entry_point='gym.envs.minigrid.envs:KeyCorridorS3R2'
+)
+
+register(
+    id='MiniGrid-KeyCorridorS3R3-v0',
+    entry_point='gym.envs.minigrid.envs:KeyCorridorS3R3'
+)
+
+register(
+    id='MiniGrid-KeyCorridorS4R3-v0',
+    entry_point='gym.envs.minigrid.envs:KeyCorridorS4R3'
+)
+
+register(
+    id='MiniGrid-KeyCorridorS5R3-v0',
+    entry_point='gym.envs.minigrid.envs:KeyCorridorS5R3'
+)
+
+register(
+    id='MiniGrid-KeyCorridorS6R3-v0',
+    entry_point='gym.envs.minigrid.envs:KeyCorridorS6R3'
+)
+
+register(
+    id='MiniGrid-DoorKey-5x5-v0',
+    entry_point='gym.envs.minigrid.envs:DoorKeyEnv5x5'
+)
+
+register(
+    id='MiniGrid-DoorKey-6x6-v0',
+    entry_point='gym.envs.minigrid.envs:DoorKeyEnv6x6'
+)
+
+register(
+    id='MiniGrid-DoorKey-8x8-v0',
+    entry_point='gym.envs.minigrid.envs:DoorKeyEnv'
+)
+
+register(
+    id='MiniGrid-DoorKey-16x16-v0',
+    entry_point='gym.envs.minigrid.envs:DoorKeyEnv16x16'
+)
