@@ -1,10 +1,14 @@
 import gym
-
+import rl_helper
+from rl_helper import fps
+from gym.envs.minigrid.envs.keycorridor import KeyCorridorS3R2
 if __name__=="__main__":
 
-    env = gym.make('MiniGrid-KeyCorridorS4R3-v0')
+    # env = gym.make('MiniGrid-KeyCorridorS4R3-v0')
+    env = gym.vector.make('MiniGrid-KeyCorridorS4R3-v0',10,asynchronous=True)
+    env.reset()
     print(env.metadata)
-
+    fps(env)
     frames=[]
     for episode in range(2): 
         obs = env.reset()
@@ -12,7 +16,9 @@ if __name__=="__main__":
             # print(step)
             action = env.action_space.sample()  # or given a custom model, action = policy(observation)
             nobs, reward, done, info = env.step(action)
-            if done:
+            if done.any():
                 break
-            env.render()
-    env.close()
+            print(nobs['image'].mean())
+            print(nobs['image'].shape)
+            # env.render()
+    # env.close()
