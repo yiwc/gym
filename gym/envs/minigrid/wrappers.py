@@ -1,3 +1,4 @@
+from inspect import findsource
 import math
 import operator
 from functools import reduce
@@ -290,6 +291,62 @@ class FlatObsWrapper(gym.core.ObservationWrapper):
                     chNo = ord('z') - ord('a') + 1
                 assert chNo < self.numCharCodes, '%s : %d' % (ch, chNo)
                 strArray[idx, chNo] = 1
+
+            self.cachedStr = mission
+            self.cachedArray = strArray
+
+        obs = np.concatenate((image.flatten(), self.cachedArray.flatten()))
+
+        return obs
+
+class FlatObsWrapper_LangV2(gym.core.ObservationWrapper):
+    """
+    Better Language process than FlagObsWrapper
+    """
+
+    def __init__(self, env, maxStrLen=96):
+        super().__init__(env)
+
+        self.colors=['blue','green','yellow','red','purple','grey']
+        self.enrich_lanecoding = 10
+        self.numCharCodes = len(self.colors)
+
+        imgSpace = env.observation_space.spaces['image']
+        imgSize = reduce(operator.mul, imgSpace.shape, 1)
+
+        self.observation_space = spaces.Box(
+            low=0,
+            high=255,
+            shape=(imgSize + self.numCharCodes * self.enrich_lanecoding,),
+            dtype='uint8'
+        )
+
+        self.cachedStr = None
+        self.cachedArray = None
+    def observation(self, obs):
+        image = obs['image']
+        mission = obs['mission']
+
+        # Cache the last-encoded mission string
+        if mission != self.cachedStr:
+            # assert len(mission) <= self.maxStrLen, 'mission string too long ({} chars)'.format(len(mission))
+            mission = mission.lower()
+            strArray = np.zeros(shape=(self.enrich_lanecoding, self.numCharCodes), dtype='float32')
+
+            find_str=False
+            for idx,c in enumerate(self.colors):
+                if c in mission:
+                    strArray[:,idx]=1
+                    find_str=True
+            assert find_str==True,"not find str"
+            
+            # for idx, ch in enumerate(mission):
+            #     if ch >= 'a' and ch <= 'z':
+            #         chNo = ord(ch) - ord('a')
+            #     elif ch == ' ':
+            #         chNo = ord('z') - ord('a') + 1
+            #     assert chNo < self.numCharCodes, '%s : %d' % (ch, chNo)
+            #     strArray[idx, chNo] = 1
 
             self.cachedStr = mission
             self.cachedArray = strArray

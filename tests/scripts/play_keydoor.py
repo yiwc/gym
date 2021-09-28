@@ -4,11 +4,10 @@ from rl_helper import fps
 from gym.envs.minigrid.envs.keycorridor import KeyCorridorS3R2
 if __name__=="__main__":
 
-    # env = gym.make('MiniGrid-KeyCorridorS4R3-v0')
     env = gym.vector.make('MiniGrid-KeyCorridorS4R3-v0',10,asynchronous=True)
     env.reset()
     print(env.metadata)
-    fps(env)
+    # fps(env)
     frames=[]
     for episode in range(2): 
         obs = env.reset()
@@ -20,5 +19,5 @@ if __name__=="__main__":
                 break
             print(nobs['image'].mean())
             print(nobs['image'].shape)
-            # env.render()
+            env.render()
     # env.close()

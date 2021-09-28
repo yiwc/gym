@@ -72,7 +72,7 @@ class FetchEnv(MiniGridEnv):
         assert hasattr(self, 'mission')
 
     def step(self, action):
-        obs, reward, done, info = MiniGridEnv.step(self, action)
+        obs, reward, done, info = super().step(action)
 
         if self.carrying:
             if self.carrying.color == self.targetColor and \
