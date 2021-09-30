@@ -39,3 +39,6 @@ tutorial/*.html
 vizdoom.ini
 
 src
+
+models
+*.zip

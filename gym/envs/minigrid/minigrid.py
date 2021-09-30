@@ -149,7 +149,7 @@ class WorldObj:
 
     def render(self, r):
         """Draw this object with the given renderer"""
-        raise NotImplementedError
+        raise NotImplementedError("render is not given in Worldobj")
 
 class Goal(WorldObj):
     def __init__(self):

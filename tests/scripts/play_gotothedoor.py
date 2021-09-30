@@ -1,10 +1,12 @@
 import gym
 import rl_helper
 from rl_helper import fps
+from rl_helper import envhelper
 from gym.envs.minigrid.envs.keycorridor import KeyCorridorS3R2
 if __name__=="__main__":
 
     env = gym.make('MiniGrid-GoToDoor-5x5-v0')
+    recorder=envhelper()
     env.reset()
     print(env.metadata)
     fps(env)
@@ -21,5 +23,7 @@ if __name__=="__main__":
                 break
             print(nobs['image'].mean())
             print(nobs['image'].shape)
+            recorder.recording(env)
             # env.render()
     # env.close()
+    recorder.save_gif()

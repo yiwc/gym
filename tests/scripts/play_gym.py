@@ -1,6 +1,8 @@
 import gym
+import rl_helper
+from rl_helper import envhelper
 if __name__=="__main__":
-
+    recorder=envhelper()
     env = gym.make('CartPole-v1')
     print(env.metadata)
 
@@ -13,5 +15,7 @@ if __name__=="__main__":
             nobs, reward, done, info = env.step(action)
             if done:
                 break
-            env.render()
-    env.close()
+            # env.render()
+            recorder.recording(env)
+    # env.close()
+    recorder.save_gif()
