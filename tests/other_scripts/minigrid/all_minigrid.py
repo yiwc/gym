@@ -18,7 +18,8 @@ def run_env(env_idx):
 
     # Load the gym environment
     env = gym.make(env_name)
-    env.env.max_steps = min(env.max_steps, 5)
+    # env.env.max_steps = 
+    env.env._set_max_steps(min(env.max_steps, 5))
     env.reset()
     env.render(render_mode)
 

@@ -28,16 +28,27 @@ def reset():
 
 def step(action):
     obs, reward, done, info = env.step(action)
-    print('step=%s, reward=%.2f' % (env.step_count, reward))
-    print(obs['image'][0,:])
+    print('step=%s, reward=%.2f, done=%d' % (env.step_count, reward, done))
+    # print(obs['image'][0,:])
     if done:
-        print('done!')
+        # print('done!')
         reset()
     else:
         redraw(obs)
 
 def key_handler(event):
-    print('pressed', event.key)
+    keys={
+        'done':"enter",
+        "toggle":" ",
+        "pickup":"x",
+        "drop":"c",
+        "left":"left",
+        "right":'right',
+        'forward':'up',
+        'done':'enter'
+    }
+    print("how to use it : \n",keys)
+    # print('pressed', event.key)
 
     if event.key == 'escape':
         window.close()
@@ -47,28 +58,28 @@ def key_handler(event):
         reset()
         return
 
-    if event.key == 'left':
+    if event.key == keys['left']:
         step(env.actions.left)
         return
-    if event.key == 'right':
+    if event.key == keys['right']:
         step(env.actions.right)
         return
-    if event.key == 'up':
+    if event.key == keys['forward']:
         step(env.actions.forward)
         return
 
     # Spacebar
-    if event.key == ' ':
+    if event.key == keys['toggle']:
         step(env.actions.toggle)
         return
-    if event.key == 'pageup':
+    if event.key == keys['pickup']:
         step(env.actions.pickup)
         return
-    if event.key == 'pagedown':
+    if event.key == keys['drop']:
         step(env.actions.drop)
         return
 
-    if event.key == 'enter':
+    if event.key == keys['done']:
         step(env.actions.done)
         return
 
@@ -76,13 +87,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--env",
     help="gym environment to load",
-    default='MiniGrid-KeyCorridorS4R3-v0'
+    default='MiniGrid-OpenOneDoor-7x7-v0'
 )
 parser.add_argument(
     "--seed",
     type=int,
     help="random seed to generate the environment with",
-    default=-1
+    default=0
 )
 parser.add_argument(
     "--tile_size",
@@ -99,7 +110,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-env = gym.make(args.env)
+env = gym.make(args.env,manual_set_door_color="red")
 
 if args.agent_view:
     env = RGBImgPartialObsWrapper(env)

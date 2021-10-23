@@ -690,7 +690,8 @@ class MiniGridEnv(gym.Env):
         # Environment configuration
         self.width = width
         self.height = height
-        self.max_steps = max_steps
+        # self.max_steps = max_steps
+        self._set_max_steps(max_steps=max_steps)
         self.see_through_walls = see_through_walls
 
         # Current position and direction of the agent
@@ -702,6 +703,13 @@ class MiniGridEnv(gym.Env):
 
         # Initialize the state
         self.reset()
+
+    @property
+    def max_steps(self):
+        return self._max_steps
+
+    def _set_max_steps(self,max_steps):
+        self._max_steps=max_steps
 
     def reset(self):
         # Current position and direction of the agent
@@ -844,6 +852,7 @@ class MiniGridEnv(gym.Env):
 
         return (self.np_random.randint(0, 2) == 0)
 
+
     def _rand_elem(self, iterable):
         """
         Pick a random element in a list
@@ -886,6 +895,11 @@ class MiniGridEnv(gym.Env):
             self.np_random.randint(xLow, xHigh),
             self.np_random.randint(yLow, yHigh)
         )
+
+    def _obj_attr_is_door_open(self,door_pos):
+        door_obj=self.grid.get(*door_pos)
+        assert isinstance(door_obj,Door)
+        return door_obj.is_open
 
     def place_obj(self,
         obj,

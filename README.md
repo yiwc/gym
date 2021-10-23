@@ -14,6 +14,8 @@ There are more envs, but the api style strictly remained as the original officia
 
 * 2021-09-25 Integrated with gym-minigrid (https://github.com/maximecb/gym-minigrid)
 
+* 2021-10-23 [(new!) MiniGrid-OpenOneDoor-7x7-v0](./tests/other_scripts/dev_opendoor.py)
+
 # Quick Start:
 
 * play with it:
