@@ -3,7 +3,7 @@ from gym.envs.minigrid.register import register
 import random
 import numpy as np
 
-class OpenOneDoor(MiniGridEnv):
+class OpenDoors(MiniGridEnv):
     """
     Environment in which the agent is instructed to go to a given object
     named using an English text string
@@ -20,7 +20,7 @@ class OpenOneDoor(MiniGridEnv):
         self.manual_set_door_color=manual_set_door_color
         super().__init__(
             grid_size=size,
-            max_steps=3*(size-2),
+            max_steps=(len(manual_set_door_color)+1)*(size-2),
             see_through_walls=True
         )
 
@@ -31,6 +31,7 @@ class OpenOneDoor(MiniGridEnv):
 
     def _gen_grid(self, width, height):
         assert self.manual_set_door_color is not None, 'please use make("env_name",manual_set_door_color="red")'
+        assert isinstance(self.manual_set_door_color,list), "only accept list . eg.['red','yellow','blue']"
 
         self.grid = Grid(width, height)
 
@@ -43,60 +44,57 @@ class OpenOneDoor(MiniGridEnv):
         objs = []
         objPos = []
 
-        colors = []
-        while self.manual_set_door_color not in colors:
-            colors = self._rand_subset(COLOR_NAMES[:],self.numObjs)
+        colors = self.manual_set_door_color[:]
+        for color in colors:
+            assert color in COLOR_NAMES, "do not support color: %s" % color
+        other_colors=list(set(COLOR_NAMES[:])-set(colors))
+        assert self.numObjs>=len(colors)
+
+
+        objType='door'
         
-        # objIdx=-1
-        # self.target_obj
+        self.target_objs_pos={}
         while len(objs) < self.numObjs:
-            objType = self._rand_elem(types)
-            objColor = colors.pop()
+            if len(colors):
+                objColor = colors.pop()    
+            else:
+                objColor = self._rand_elem(other_colors)
 
-            # If this object already exists, try again
-            if (objType, objColor) in objs:
-                continue
-
-            elif objType == 'door':
-                obj = Door(objColor)
-
+            obj = Door(objColor)
             pos = self.place_obj(obj)
             objs.append((objType, objColor))
             objPos.append(pos)
-            if objColor == self.manual_set_door_color:
-                # targetOjbIdx=(objType, objColor)
-                self.targetType = objType
-                self.target_color = objColor
-                self.target_pos = pos
+            if objColor in self.manual_set_door_color:
+                self.target_objs_pos[objColor]=pos
 
         # Randomize the agent start position and orientation
         self.place_agent()
 
-        descStr = '%s %s' % (self.target_color, self.targetType)
+        descStr = '%s %s' % (" ".join(self.manual_set_door_color), objType)
         self.mission = 'go to the %s' % descStr
 
+        self.rewarded=0
 
     def step(self, action):
         obs, reward, done, info = MiniGridEnv.step(self, action)
 
-        ax, ay = self.agent_pos
-        tx, ty = self.target_pos
-
-        is_target_door_open=self._obj_attr_is_door_open(self.target_pos)
-        if is_target_door_open:
-            reward = 1
-            done = True
-
+        target_doors_state=[self._obj_attr_is_door_open(self.target_objs_pos[color]) for color in self.manual_set_door_color]
+        if sum(target_doors_state)>self.rewarded:
+            if target_doors_state[self.rewarded]==True:
+                reward = 1
+                self.rewarded+=1
+            else:
+                reward = 0
+                done=True
+        if self.rewarded >= len(target_doors_state):
+            done=True
+            
         return obs, reward, done, info
 
-class OpenOneDoor5x5Env(OpenOneDoor):
-    def __init__(self,**kwargs):
-        super().__init__(size=7,**kwargs)
+# class OpenDoors5x5Env(OpenOneDoor):
+#     def __init__(self,**kwargs):
+#         super().__init__(size=7,**kwargs)
 
-class OpenOneDoor7x7Env(OpenOneDoor):
+class OpenDoors7x7Env(OpenDoors):
     def __init__(self,**kwargs):
         super().__init__(size=9,**kwargs)
-
-# class OpenOneDoor9x9Env(OpenOneDoor):
-#     def __init__(self):
-#         super().__init__(size=9)

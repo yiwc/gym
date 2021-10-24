@@ -20,4 +20,5 @@ from gym.envs.minigrid.envs.lavagap import *
 from gym.envs.minigrid.envs.dynamicobstacles import *
 from gym.envs.minigrid.envs.distshift import *
 from gym.envs.minigrid.envs.opendoor import *
+from gym.envs.minigrid.envs.opendoors import *
 

@@ -913,3 +913,8 @@ register(
     id='MiniGrid-OpenOneDoor-7x7-v0',
     entry_point='gym.envs.minigrid.envs:OpenOneDoor7x7Env'
 )
+
+register(
+    id='MiniGrid-OpenDoors-7x7-v0',
+    entry_point='gym.envs.minigrid.envs:OpenDoors7x7Env'
+)

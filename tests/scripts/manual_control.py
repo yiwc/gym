@@ -17,6 +17,7 @@ def redraw(img):
 def reset():
     if args.seed != -1:
         env.seed(args.seed)
+        args.seed+=1
 
     obs = env.reset()
 
@@ -84,11 +85,11 @@ def key_handler(event):
         return
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--env",
-    help="gym environment to load",
-    default='MiniGrid-OpenOneDoor-7x7-v0'
-)
+# parser.add_argument(
+#     "--env",
+#     help="gym environment to load",
+#     default='MiniGrid-OpenDoors-7x7-v0'
+# )
 parser.add_argument(
     "--seed",
     type=int,
@@ -110,13 +111,17 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-env = gym.make(args.env,manual_set_door_color="red")
+# env=
+# env = gym.make("MiniGrid-OpenOneDoor-7x7-v0",manual_set_door_color="red")
+# env = gym.make("MiniGrid-OpenDoors-7x7-v0",manual_set_door_color=['blue',"red"])
+# env = gym.make("MiniGrid-OpenDoors-7x7-v0",manual_set_door_color=['blue',"red",'yellow'])
+env = gym.make("MiniGrid-OpenDoors-7x7-v0",manual_set_door_color=['red','blue'])
 
 if args.agent_view:
     env = RGBImgPartialObsWrapper(env)
     env = ImgObsWrapper(env)
 
-window = Window('gym_minigrid - ' + args.env)
+window = Window('gym_minigrid - ')
 window.reg_key_handler(key_handler)
 
 reset()
