@@ -904,10 +904,10 @@ register(
     entry_point='gym.envs.minigrid.envs:GoToDoor8x8Env'
 )
 
-# register(
-#     id='MiniGrid-OpenOneDoor-5x5-v0',
-#     entry_point='gym.envs.minigrid.envs:OpenOneDoor5x5Env'
-# )
+register(
+    id='MiniGrid-OpenOneDoor-5x5-v0',
+    entry_point='gym.envs.minigrid.envs:OpenOneDoor5x5Env'
+)
 
 register(
     id='MiniGrid-OpenOneDoor-7x7-v0',

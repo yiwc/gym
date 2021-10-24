@@ -89,8 +89,8 @@ class OpenOneDoor(MiniGridEnv):
         return obs, reward, done, info
 
 class OpenOneDoor5x5Env(OpenOneDoor):
-    def __init__(self):
-        super().__init__(size=7)
+    def __init__(self,**kwargs):
+        super().__init__(size=7,**kwargs)
 
 class OpenOneDoor7x7Env(OpenOneDoor):
     def __init__(self,**kwargs):

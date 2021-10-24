@@ -24,6 +24,36 @@ if __name__=="__main__":
     render=False
 
 
+    env = gym.make('MiniGrid-OpenOneDoor-5x5-v0',manual_set_door_color="yellow")
+    
+    nobs,reward,done,info=play_sequence(env,actions=['forward','forward','forward'],render=render,start_with_reset=True,seed=0,assert_reward=0)
+    assert done==0
+    assert reward==0
+    nobs,reward,done,info=play_sequence(env,actions=['toggle'],render=render,start_with_reset=False,seed=0,assert_reward=1)
+    assert done==1
+    assert reward ==1 
+    env.close()
+
+
+    env = gym.make('MiniGrid-OpenOneDoor-5x5-v0',manual_set_door_color="red")
+    
+    nobs,reward,done,info=play_sequence(env,actions=['forward','forward','forward','left','forward','forward','forward'],render=render,start_with_reset=True,seed=0,assert_reward=0)
+    assert done==0
+    assert reward==0
+    nobs,reward,done,info=play_sequence(env,actions=['toggle'],render=render,start_with_reset=False,seed=0,assert_reward=1)
+    assert done==1
+    assert reward ==1 
+
+
+    # Test max steps = 3*5 = 15
+    nobs,reward,done,info=play_sequence(env,actions=['right' for i in range(3*5)],render=False,start_with_reset=True,seed=0)
+    assert done==1
+    nobs,reward,done,info=play_sequence(env,actions=['right' for i in range(3*5-1)],render=False,start_with_reset=True,seed=0)
+    assert done==0
+
+    env.close()
+
+
     env = gym.make('MiniGrid-OpenOneDoor-7x7-v0',manual_set_door_color="yellow")
     
     nobs,reward,done,info=play_sequence(env,actions=['right','right','forward','forward','left','forward','forward','forward','forward'],render=render,start_with_reset=True,seed=0,assert_reward=0)
@@ -32,6 +62,7 @@ if __name__=="__main__":
     nobs,reward,done,info=play_sequence(env,actions=['toggle'],render=render,start_with_reset=False,seed=0,assert_reward=1)
     assert done==1
     assert reward ==1 
+    env.close()
 
 
     env = gym.make('MiniGrid-OpenOneDoor-7x7-v0',manual_set_door_color="red")
@@ -50,6 +81,8 @@ if __name__=="__main__":
     nobs,reward,done,info=play_sequence(env,actions=['toggle'],render=render,start_with_reset=False,seed=1,assert_reward=1)
     assert done==1
     assert reward ==1 
+
+    env.close()
 
 
 
@@ -84,3 +117,5 @@ if __name__=="__main__":
     assert done==1
     nobs,reward,done,info=play_sequence(env,actions=['right' for i in range(3*7-1)],render=False,start_with_reset=True,seed=0)
     assert done==0
+
+    env.close()
