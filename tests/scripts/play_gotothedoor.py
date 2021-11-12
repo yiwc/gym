@@ -19,11 +19,11 @@ if __name__=="__main__":
             nobs, reward, done, info = env.step(action)
             # if done.any():
             #     break
-            if done:
-                break
             print(nobs['image'].mean())
             print(nobs['image'].shape)
             recorder.recording(env)
+            if done:
+                break
             # env.render()
     # env.close()
     recorder.save_gif()

@@ -240,11 +240,11 @@ class Door(WorldObj):
 
         # State, 0: open, 1: closed, 2: locked
         if self.is_open:
-            state = 0
+            state = STATE_TO_IDX['open']
         elif self.is_locked:
-            state = 2
+            state = STATE_TO_IDX['locked']
         elif not self.is_open:
-            state = 1
+            state = STATE_TO_IDX['closed']
 
         return (OBJECT_TO_IDX[self.type], COLOR_TO_IDX[self.color], state)
 

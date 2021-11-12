@@ -915,6 +915,22 @@ register(
 )
 
 register(
+    id='MiniGrid-OpenOneDoor-Red7x7-v0',
+    entry_point='gym.envs.minigrid.envs:OpenOneDoor7x7EnvRed'
+)
+
+register(
+    id='MiniGrid-OpenOneDoor-Blue7x7-v0',
+    entry_point='gym.envs.minigrid.envs:OpenOneDoor7x7EnvBlue'
+)
+
+register(
+    id='MiniGrid-OpenOneDoor-Yellow7x7-v0',
+    entry_point='gym.envs.minigrid.envs:OpenOneDoor7x7EnvYellow'
+)
+
+
+register(
     id='MiniGrid-OpenDoors-7x7-v0',
     entry_point='gym.envs.minigrid.envs:OpenDoors7x7Env'
 )

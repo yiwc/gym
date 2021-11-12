@@ -2,7 +2,8 @@ from inspect import findsource
 import math
 import operator
 from functools import reduce
-
+import pathlib
+import random
 import numpy as np
 import gym
 from gym import error, spaces, utils
@@ -107,9 +108,60 @@ class ImgObsWrapper(gym.core.ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
         self.observation_space = env.observation_space.spaces['image']
-
+        self.init_time=False
     def observation(self, obs):
+        if not self.init_time:
+            # print(obs)
+            self.init_time=True
         return obs['image']
+
+
+class ImgObsFloatNormalizeWrapper(gym.core.ObservationWrapper):
+    """
+    Use the image as the only observation output, no language/mission.
+    """
+
+    def __init__(self, env):
+        super().__init__(env)
+        # self.observation_space = 
+        s=env.observation_space
+        assert len(s.shape)==3
+        assert s.dtype=='uint8'
+        assert s.low.max()==s.low.min()==0
+        assert s.high.max()==s.high.min()
+
+        self.h=s.high.copy()
+        self.l=s.low.copy()
+
+
+        self.observation_space = spaces.Box(low=np.zeros_like(s.low),high=np.ones_like(s.high),shape=s.shape,dtype='float64')
+        # env.observation_space.spaces['image']
+        # self.init_time=False
+    def observation(self, obs):
+        new_obs=np.float64(obs/self.h)
+        return new_obs
+        # return obs['image']
+
+class RandomSeedChecker(gym.core.ObservationWrapper):
+    """
+    Use the image as the only observation output, no language/mission.
+    """
+
+    def __init__(self, env):
+        super().__init__(env)
+        self.p=pathlib.Path("./test_{}.txt".format(random.random()))
+        # self.save_logs(0)
+    def save_logs(self,obs):
+        with open(str(self.p),"a+") as f:
+            # f.write(str(np.random.rand()))
+            f.write(str(obs.sum()))
+            # f.write(str(obs.mean()))
+            f.write("\n")
+        # a=asd
+    def observation(self,obs):
+        self.save_logs(obs)
+        return obs
+
 
 class OneHotPartialObsWrapper(gym.core.ObservationWrapper):
     """
@@ -152,6 +204,19 @@ class OneHotPartialObsWrapper(gym.core.ObservationWrapper):
             'mission': obs['mission'],
             'image': out
         }
+
+
+# class ReEncode(gym.core.ObservationWrapper):
+#     """
+#     Reencode the coloridx and typeidx.
+#     """
+
+#     def __init__(self, env, COLOR_TO_IDX,):
+#         super().__init__(env)
+
+        
+
+
 
 class RGBImgObsWrapper(gym.core.ObservationWrapper):
     """
@@ -232,6 +297,32 @@ class FullyObsWrapper(gym.core.ObservationWrapper):
             high=255,
             shape=(self.env.width, self.env.height, 3),  # number of cells
             dtype='uint8'
+        )
+
+    def observation(self, obs):
+        env = self.unwrapped
+        full_grid = env.grid.encode()
+        full_grid[env.agent_pos[0]][env.agent_pos[1]] = np.array([
+            OBJECT_TO_IDX['agent'],
+            COLOR_TO_IDX['red'],
+            env.agent_dir
+        ])
+
+        return {
+            'mission': obs['mission'],
+            'image': full_grid
+        }
+
+class OnyDoorDifferentColorObserver(gym.core.ObservationWrapper):
+
+    def __init__(self, env):
+        super().__init__(env)
+
+        self.observation_space.spaces["image"] = spaces.Box(
+            low=-1,
+            high=1,
+            shape=(self.env.width, self.env.height),  # number of cells
+            dtype='float32'
         )
 
     def observation(self, obs):

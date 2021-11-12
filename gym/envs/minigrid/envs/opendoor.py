@@ -97,6 +97,18 @@ class OpenOneDoor7x7Env(OpenOneDoor):
     def __init__(self,**kwargs):
         super().__init__(size=9,**kwargs)
 
+class OpenOneDoor7x7EnvRed(OpenOneDoor):
+    def __init__(self):
+        super().__init__(size=9,manual_set_door_color='red')
+
+class OpenOneDoor7x7EnvBlue(OpenOneDoor):
+    def __init__(self):
+        super().__init__(size=9,manual_set_door_color='blue')
+
+class OpenOneDoor7x7EnvYellow(OpenOneDoor):
+    def __init__(self):
+        super().__init__(size=9,manual_set_door_color='yellow')
+
 # class OpenOneDoor9x9Env(OpenOneDoor):
 #     def __init__(self):
 #         super().__init__(size=9)
