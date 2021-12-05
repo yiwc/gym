@@ -91,3 +91,4 @@ class Window:
 
         plt.close()
         self.closed = True
+

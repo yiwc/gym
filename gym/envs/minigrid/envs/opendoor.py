@@ -49,6 +49,9 @@ class OpenOneDoor(MiniGridEnv):
         
         # objIdx=-1
         # self.target_obj
+        self.all_doors_pos=[]
+        self.other_doors_pos=[]
+        
         while len(objs) < self.numObjs:
             objType = self._rand_elem(types)
             objColor = colors.pop()
@@ -68,7 +71,11 @@ class OpenOneDoor(MiniGridEnv):
                 self.targetType = objType
                 self.target_color = objColor
                 self.target_pos = pos
-
+            else:
+                self.other_doors_pos.append(pos)
+            self.all_doors_pos.append(pos)
+        # self.other_doors_pos=self.all_doors_pos[:]
+        # self.other_doors_pos.remove(self.target_pos)
         # Randomize the agent start position and orientation
         self.place_agent()
 
@@ -83,9 +90,15 @@ class OpenOneDoor(MiniGridEnv):
         tx, ty = self.target_pos
 
         is_target_door_open=self._obj_attr_is_door_open(self.target_pos)
-        if is_target_door_open:
+        is_other_doors_open=[self._obj_attr_is_door_open(door_pos) for door_pos in self.other_doors_pos]
+        
+        if is_target_door_open: # open the correct door
             reward = 1
             done = True
+        elif sum(is_other_doors_open): # open the wrong door
+            reward = -1
+            done = True
+        
 
         return obs, reward, done, info
 
@@ -108,6 +121,9 @@ class OpenOneDoor7x7EnvBlue(OpenOneDoor):
 class OpenOneDoor7x7EnvYellow(OpenOneDoor):
     def __init__(self):
         super().__init__(size=9,manual_set_door_color='yellow')
+class OpenOneDoor7x7EnvGrey(OpenOneDoor):
+    def __init__(self):
+        super().__init__(size=9,manual_set_door_color='grey')
 
 # class OpenOneDoor9x9Env(OpenOneDoor):
 #     def __init__(self):

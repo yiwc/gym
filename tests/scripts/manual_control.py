@@ -50,7 +50,7 @@ def key_handler(event):
     }
     print("how to use it : \n",keys)
     # print('pressed', event.key)
-
+    
     if event.key == 'escape':
         window.close()
         return
@@ -115,11 +115,18 @@ args = parser.parse_args()
 # env = gym.make("MiniGrid-OpenOneDoor-7x7-v0",manual_set_door_color="red")
 # env = gym.make("MiniGrid-OpenDoors-7x7-v0",manual_set_door_color=['blue',"red"])
 # env = gym.make("MiniGrid-OpenDoors-7x7-v0",manual_set_door_color=['blue',"red",'yellow'])
-env = gym.make("MiniGrid-OpenDoors-7x7-v0",manual_set_door_color=['red','blue'])
+env = gym.make("MiniGrid-OpenDoors-7x7-v0",manual_set_door_color=['red','blue','yellow'])
 
-if args.agent_view:
-    env = RGBImgPartialObsWrapper(env)
-    env = ImgObsWrapper(env)
+# if args.agent_view:
+#     env = RGBImgPartialObsWrapper(env)
+    # env = ImgObsWrapper(env)
+
+
+env = RGBImgPartialObsWrapper(env, tile_size=6)
+env = ImgObsWrapper(env)
+env = ImgObsFloatNormalizeWrapper(env)
+env = FIRL_Mix2Levels_ObsWrapper(env)
+
 
 window = Window('gym_minigrid - ')
 window.reg_key_handler(key_handler)

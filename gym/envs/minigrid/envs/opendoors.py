@@ -25,6 +25,9 @@ class OpenDoors(MiniGridEnv):
         )
 
 
+    def get_manual_set_door_color(self):
+        return self.manual_set_door_color
+
     def set_target_door(self,color):
         assert color in COLOR_NAMES, COLOR_NAMES
         self.manual_set_door_color=color
@@ -75,16 +78,20 @@ class OpenDoors(MiniGridEnv):
 
         self.rewarded=0
 
+    def get_target_doors_state(self):
+        target_doors_state=[self._obj_attr_is_door_open(self.target_objs_pos[color]) for color in self.manual_set_door_color]
+        return target_doors_state
+
     def step(self, action):
         obs, reward, done, info = MiniGridEnv.step(self, action)
 
-        target_doors_state=[self._obj_attr_is_door_open(self.target_objs_pos[color]) for color in self.manual_set_door_color]
+        target_doors_state=self.get_target_doors_state()
         if sum(target_doors_state)>self.rewarded:
             if target_doors_state[self.rewarded]==True:
                 reward = 1
                 self.rewarded+=1
             else:
-                reward = 0
+                reward = -1
                 done=True
         if self.rewarded >= len(target_doors_state):
             done=True

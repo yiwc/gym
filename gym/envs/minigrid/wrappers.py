@@ -4,6 +4,7 @@ import operator
 from functools import reduce
 import pathlib
 import random
+from gym.spaces import space
 import numpy as np
 import gym
 from gym import error, spaces, utils
@@ -250,6 +251,56 @@ class RGBImgObsWrapper(gym.core.ObservationWrapper):
             'mission': obs['mission'],
             'image': rgb_img
         }
+
+
+class FIRL_OnlyHighLevels_ObsWrapper(gym.core.ObservationWrapper):
+    def __init__(self,env):
+        
+        super().__init__(env)
+        assert type(env.observation_space) is gym.spaces.Dict, "please use FIRL_Mix2Levels_ObsWrapper wrap it first"
+        assert "OpenDoors" in self.unwrapped.__class__.__name__, "can only support OpenDoors envs"
+        
+        self.observation_space=env.observation_space["l2"]
+    
+            
+    def observation(self, obs):
+        '''
+        This obs is a high-level obs
+        '''
+        return obs['l2']
+
+
+class FIRL_Mix2Levels_ObsWrapper(gym.core.ObservationWrapper):
+    """
+    Wrapper to mix output low level observation and high level observation,
+    high-lvel observation can be manually given .
+    Before using this wrapper, we assume you already have wrappers of :
+
+    """
+    def __init__(self, env):
+        super().__init__(env)
+        assert type(env.observation_space) is gym.spaces.Box
+        assert "OpenDoors" in self.unwrapped.__class__.__name__, "can only support OpenDoors envs"
+        l1_obs_space = env.observation_space
+        l2_obs_len = len(env.get_manual_set_door_color())
+        self.observation_space=spaces.Dict(
+            {
+                "l2":spaces.Box(low=0,high=1,shape=(l2_obs_len,),dtype=np.uint8),
+                "l1":l1_obs_space
+            }
+        )
+    
+    def observation(self, obs):
+        '''
+        This obs is from a 2-level obs
+        '''
+        target_objects_states=np.array([int(i==True) for i in self.unwrapped.get_target_doors_state()],dtype=np.uint8)
+        # print(target_objects_states)
+        return {
+            'l1':obs,
+            'l2':target_objects_states
+        }
+
 
 
 class RGBImgPartialObsWrapper(gym.core.ObservationWrapper):
