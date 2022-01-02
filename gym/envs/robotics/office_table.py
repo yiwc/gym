@@ -191,7 +191,9 @@ class OfficeTable(RobotEnv_revised):
     # ----------------------------
 
     def compute_reward(self):
-        base_reward=0
+        scale=1
+
+        base_reward=2
         # stage
         
         if self.goal.startswith(self.achieved_goal):
@@ -204,17 +206,22 @@ class OfficeTable(RobotEnv_revised):
                 obj_pos= self.sim.data.get_site_xpos("object{}".format(target_obj_id))
                 target_pos= self.targets_valid_position[target_obj_id].copy()
 
-                dis_grip2obj= min(1,pos_distance(grip_pos,obj_pos))
-                dis_obj2target=min(1,pos_distance(obj_pos,target_pos))
+                dis_grip2obj= pos_distance(grip_pos,obj_pos)
+                dis_obj2target= pos_distance(obj_pos,target_pos)
                 reward_reaching_obj=-dis_grip2obj
                 reward_reaching_target=-dis_obj2target
-                return finished_stage*2+reward_reaching_obj+reward_reaching_target
+
+                reward=finished_stage*2+reward_reaching_obj+reward_reaching_target
+                # return 
             else: # achieved the final goal already, the finished_stage is 1 bigger than as usual
-                return finished_stage*2
+                reward = finished_stage*2
+                # return 
             
         else:
-            return base_reward
+            reward = base_reward
+            # return base_reward
         
+        return scale*reward
 
     # RobotEnv methods
     # ----------------------------
