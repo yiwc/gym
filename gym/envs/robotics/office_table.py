@@ -193,7 +193,7 @@ class OfficeTable(RobotEnv_revised):
     def compute_reward(self):
         scale=1
 
-        base_reward=2
+        base_reward=1
         # stage
         
         if self.goal.startswith(self.achieved_goal):
@@ -287,23 +287,23 @@ class OfficeTable(RobotEnv_revised):
             objects_velr[id] = self.sim.data.get_site_xvelr("object{}".format(id)) * dt
             objects_rel_pos[id]=objects_pos[id] - grip_pos
             objects_velp[id]  -= grip_velp
-            objects_rel_pos2target[id] = pos_distance(objects_pos[id],targets_pos[id])
-            achieveds[id]=objects_rel_pos2target[id]<0.05
+            objects_rel_pos2target[id] = objects_pos[id]-targets_pos[id]
+            achieveds[id]=pos_distance(objects_rel_pos2target[id],np.array([0,0,0]))<0.05
             self.achieved_goal = self.achieved_goal+obj_color if (achieveds[id] and not obj_color in self.achieved_goal) else self.achieved_goal
         # print("achieved_goal= {} , goal={}".format(self.achieved_goal,self.goal))
         # print("objects_rel_pos2target=",objects_rel_pos2target)
         # print('\n')
         obs = np.concatenate(
             [
-                grip_pos,
+                # grip_pos,
                 gripper_state,
                 grip_velp,
                 gripper_vel,
             ] 
-            + list(map(lambda x:x.ravel(),objects_pos))
-            + list(map(lambda x:x.ravel(),objects_rot))
-            + list(map(lambda x:x.ravel(),objects_velp))
-            + list(map(lambda x:x.ravel(),objects_velr))
+            # + list(map(lambda x:x.ravel(),objects_pos))
+            # + list(map(lambda x:x.ravel(),objects_rot))
+            # + list(map(lambda x:x.ravel(),objects_velp))
+            # + list(map(lambda x:x.ravel(),objects_velr))
             + list(map(lambda x:x.ravel(),objects_rel_pos))
             + list(map(lambda x:x.ravel(),objects_rel_pos2target))
         )
