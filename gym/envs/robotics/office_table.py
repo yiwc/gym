@@ -221,7 +221,8 @@ class OfficeTable(RobotEnv_revised):
             reward = base_reward
             # return base_reward
         
-        return scale*reward
+        return 0
+        # return scale*reward
 
     # RobotEnv methods
     # ----------------------------
