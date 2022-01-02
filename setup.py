@@ -9,7 +9,7 @@ from version import VERSION
 
 import subprocess
 result = subprocess.run(['apt','list','--installed'], stdout=subprocess.PIPE)
-assert 'ffmpeg' in str(result.stdout), "ffmp not install, try: sudo apt-get install ffmpeg"
+# assert 'ffmpeg' in str(result.stdout), "ffmp not install, try: sudo apt-get install ffmpeg"
 
 # Environment-specific dependencies.
 extras = {
