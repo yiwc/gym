@@ -193,7 +193,7 @@ class OfficeTable(RobotEnv_revised):
     def compute_reward(self):
         scale=0.1
 
-        base_reward=6
+        base_reward=2
         # stage
         
         if self.goal.startswith(self.achieved_goal):
@@ -221,8 +221,8 @@ class OfficeTable(RobotEnv_revised):
             reward = base_reward
             # return base_reward
         
-        return 0
-        # return scale*reward
+        # return 0
+        return scale*(reward+base_reward)
 
     # RobotEnv methods
     # ----------------------------
