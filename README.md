@@ -18,6 +18,9 @@ There are more envs, but the api style strictly remained as the original officia
 
 * 2021-10-24  multi-stage task - [MiniGrid-OpenDoors-7x7-v0](./tests/other_scripts/dev_opendoor.py)
 
+* 2022-01-02 multi-stage task - [OfficeTableRGB-v1],
+* 2022-01-02 single-stage task - [OfficeTableR-v1],[OfficeTableG-v1],[OfficeTableB-v1],
+
 
 # Quick Start:
 
