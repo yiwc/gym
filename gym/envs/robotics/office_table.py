@@ -191,9 +191,9 @@ class OfficeTable(RobotEnv_revised):
     # ----------------------------
 
     def compute_reward(self):
-        scale=0.1
+        scale=1
 
-        base_reward=2
+        base_reward=1
         # stage
         
         if self.goal.startswith(self.achieved_goal):
@@ -211,7 +211,7 @@ class OfficeTable(RobotEnv_revised):
                 reward_reaching_obj=-dis_grip2obj
                 reward_reaching_target=-dis_obj2target
 
-                reward=finished_stage*2+reward_reaching_obj+reward_reaching_target
+                reward=finished_stage*2+2*reward_reaching_obj+2*reward_reaching_target
                 # return 
             else: # achieved the final goal already, the finished_stage is 1 bigger than as usual
                 reward = finished_stage*2
@@ -263,7 +263,7 @@ class OfficeTable(RobotEnv_revised):
         dt = self.sim.nsubsteps * self.sim.model.opt.timestep
         grip_velp = self.sim.data.get_site_xvelp("robot0:grip") * dt
         robot_qpos, robot_qvel = utils.robot_get_obs(self.sim)
-
+        print('grep pos',grip_pos)
         # targets_pos = [self.sim.data.get_site_xpos("target{}".format(i)) for i in range(len(self.all_objects))]
         targets_pos = self.targets_valid_position.copy()
 
@@ -316,7 +316,21 @@ class OfficeTable(RobotEnv_revised):
         self.sim.step()
         self._step_callback()
         obs = self._get_obs()
+
+
+        # wrong achieved
         done= (not self.goal.startswith(self.achieved_goal)) or self.goal==self.achieved_goal
+
+        # out of range
+        grip_pos = self.sim.data.get_site_xpos("robot0:grip")
+        leng=pos_distance(grip_pos[:2],np.array([1,0.75]))
+        print('leng',leng)
+        if grip_pos[0]>1.52 or grip_pos[0]<0.96 or grip_pos[1]<0.15 or grip_pos[1]>1.15 or grip_pos[2]<0.41 or grip_pos[2]>0.8 or leng>0.57:
+            done=True
+        
+        # print('rob len',leng)
+        # if (grip_pos[0]-0.96)**2+()
+
 
         reward = self.compute_reward()
 
