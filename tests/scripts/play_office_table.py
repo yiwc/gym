@@ -1,31 +1,30 @@
 import gym
-import rl_helper
-from rl_helper import fps
-from rl_helper import envhelper
+ENABLE_OFFSCREEN_HELPER=True
+if ENABLE_OFFSCREEN_HELPER:
+    import rl_helper
+    from rl_helper import envhelper
 # from gym.envs.minigrid.envs.keycorridor import KeyCorridorS3R2
+
+from rl_helper import fps
 if __name__=="__main__":
 
-    # env = gym.make('MiniGrid-GoToDoor-5x5-v0')
-    env = gym.make('OfficeTable-v1')
-    # env = gym.make('FetchPickAndPlaceDense-v1')
-    recorder=envhelper()
+    env = gym.make('FetchPickAndPlaceDense-v1')
+    if ENABLE_OFFSCREEN_HELPER:
+        recorder=envhelper()
     env.reset()
-    # print(env.metadata)
-    # fps(env)
-    frames=[]
-    for episode in range(2): 
+    for episode in range(10): 
         obs = env.reset()
         for step in range(15):
-            # print(step)
             action = env.action_space.sample()  # or given a custom model, action = policy(observation)
+            # print()
+            # action=[-1,0,0,0]
             nobs, reward, done, info = env.step(action)
-            # if done.any():
-            #     break
-            # print(nobs['image'].mean())
-            # print(nobs['image'].shape)
-            recorder.recording(env,env.render('rgb_array'))
+            if ENABLE_OFFSCREEN_HELPER:
+                recorder.recording(env,env.render('rgb_array'))
+            else:
+                env.render()
             if done:
                 break
-            # env.render()
-    # env.close()
-    recorder.save_gif()
+
+    if ENABLE_OFFSCREEN_HELPER:
+        recorder.save_gif()

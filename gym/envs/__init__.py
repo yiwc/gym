@@ -293,10 +293,31 @@ for reward_type in ["sparse", "dense"]:
     )
 
     register(
-        id="OfficeTable{}-v1".format(suffix),
-        entry_point="gym.envs.robotics:OfficeTablePickAndPlaceFIRLEnv",
+        id="OfficeTableR{}-v1".format(suffix),
+        entry_point="gym.envs.robotics:OfficeTableRPickAndPlaceFIRLEnv",
         kwargs=kwargs,
-        max_episode_steps=50,
+        max_episode_steps=100,
+    )
+
+    register(
+        id="OfficeTableG{}-v1".format(suffix),
+        entry_point="gym.envs.robotics:OfficeTableGPickAndPlaceFIRLEnv",
+        kwargs=kwargs,
+        max_episode_steps=100,
+    )
+
+    register(
+        id="OfficeTableB{}-v1".format(suffix),
+        entry_point="gym.envs.robotics:OfficeTableBPickAndPlaceFIRLEnv",
+        kwargs=kwargs,
+        max_episode_steps=100,
+    )
+
+    register(
+        id="OfficeTableRGB{}-v1".format(suffix),
+        entry_point="gym.envs.robotics:OfficeTableRGBPickAndPlaceFIRLEnv",
+        kwargs=kwargs,
+        max_episode_steps=300,
     )
 
     register(
