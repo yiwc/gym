@@ -293,6 +293,13 @@ for reward_type in ["sparse", "dense"]:
     )
 
     register(
+        id="OfficeTable{}-v1".format(suffix),
+        entry_point="gym.envs.robotics:OfficeTablePickAndPlaceFIRLEnv",
+        kwargs=kwargs,
+        max_episode_steps=50,
+    )
+
+    register(
         id="FetchReach{}-v1".format(suffix),
         entry_point="gym.envs.robotics:FetchReachEnv",
         kwargs=kwargs,
