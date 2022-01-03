@@ -4,7 +4,7 @@ import time
 from rl_helper import fps
 if __name__=="__main__":
 
-    env = gym.make('OfficeTableRGB-v1')
+    env = gym.make('OfficeTableB-v1')
 
     print(env.action_space)
     print(env.observation_space)
@@ -15,7 +15,7 @@ if __name__=="__main__":
     # env.reset()
     # for i in range(500):
     #     obs,rew,done,info=env.step(env.action_space.sample())
-    #     print("rew:",rew)
+    #     print("reward:",rew)
     #     if rew==0:
     #         print(rew)
     #         pass
