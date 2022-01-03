@@ -327,7 +327,7 @@ class OfficeTable(RobotEnv_revised):
         # print("objects_rel_pos2target",objects_rel_pos2target)
         obs = np.tanh(obs)*2
         # obs = np.clip(obs,OBS_LOW,OBS_HIGH)
-        print("gripper_hight",gripper_hight)
+        # print("gripper_hight",gripper_hight)
         return obs.copy()
 
 
@@ -350,7 +350,7 @@ class OfficeTable(RobotEnv_revised):
             done=True
         if grip_pos[2]<0.418: # collision with table
             done=True
-        print("grip_pos",grip_pos)
+        # print("grip_pos",grip_pos)
         
         # print('rob len',leng)
         # if (grip_pos[0]-0.96)**2+()
