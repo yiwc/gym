@@ -131,7 +131,8 @@ class OfficeTable(RobotEnv_revised):
         reward_type,
         target_objects,
         all_objects,
-        senstive=1 # senstive=1->~1cm trigger max activation. Senstive=2, ~0.5cm trigger max activation. Senstive=3, ~0.33cm trigger max activateiton.
+        senstive=1, # senstive=1->~1cm trigger max activation. Senstive=2, ~0.5cm trigger max activation. Senstive=3, ~0.33cm trigger max activateiton.
+        action_scale=1, # 1 normal speed, 0.1 slow speed of action
     ):
         """Initializes a new Fetch environment.
 
@@ -162,8 +163,9 @@ class OfficeTable(RobotEnv_revised):
         self.all_objects=all_objects
         self.achieved_goal=""
         self.senstive=senstive
+        self.action_scale=action_scale
 
-        print('info created: senstive={senstive}, target_objects={target_objects}, random_check={random_check}'.format(target_objects=target_objects,senstive=senstive,random_check=np.random.rand()))
+        print('info created: \n\nsenstive={senstive}, \n\ntarget_objects={target_objects}, \n\nrandom_check={random_check},\n\n action_scale={action_scale}\n\n!!!!\n\n'.format(target_objects=target_objects,senstive=senstive,random_check=np.random.rand(),action_scale=action_scale))
 
         assert all_objects=="RGB"
 
@@ -246,7 +248,7 @@ class OfficeTable(RobotEnv_revised):
         )  # ensure that we don't change the action outside of this scope
         pos_ctrl, gripper_ctrl = action[:3], action[3]
 
-        pos_ctrl *= 0.05  # limit maximum change in position
+        pos_ctrl *= 0.05*self.action_scale  # limit maximum change in position
         rot_ctrl = [
             1.0,
             0.0,
