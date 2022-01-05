@@ -4,7 +4,7 @@ import time
 from rl_helper import fps
 if __name__=="__main__":
 
-    env = gym.make('OfficeTableB-v1',senstive=2,action_scale=0.3)
+    env = gym.make('OfficeTableB-v1',senstive=2,action_scale=1,posrel_reciprocal=True)
 
     # print(env.action_space)
     # print(env.observation_space)

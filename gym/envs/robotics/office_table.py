@@ -133,6 +133,7 @@ class OfficeTable(RobotEnv_revised):
         all_objects,
         senstive=1, # senstive=1->~1cm trigger max activation. Senstive=2, ~0.5cm trigger max activation. Senstive=3, ~0.33cm trigger max activateiton.
         action_scale=1, # 1 normal speed, 0.1 slow speed of action
+        posrel_reciprocal=False
     ):
         """Initializes a new Fetch environment.
 
@@ -164,8 +165,9 @@ class OfficeTable(RobotEnv_revised):
         self.achieved_goal=""
         self.senstive=senstive
         self.action_scale=action_scale
+        self.posrel_reciprocal=posrel_reciprocal
 
-        print('info created: \n\nsenstive={senstive}, \n\ntarget_objects={target_objects}, \n\nrandom_check={random_check},\n\n action_scale={action_scale}\n\n!!!!\n\n'.format(target_objects=target_objects,senstive=senstive,random_check=np.random.rand(),action_scale=action_scale))
+        print('info created: \n\nsenstive={senstive}, \n\ntarget_objects={target_objects}, \n\nrandom_check={random_check},\n\n action_scale={action_scale}\n\n posrel_reciprocal={posrel_reciprocal}!!!!\n\n'.format(target_objects=target_objects,senstive=senstive,random_check=np.random.rand(),action_scale=action_scale,posrel_reciprocal=posrel_reciprocal))
 
         assert all_objects=="RGB"
 
@@ -304,23 +306,26 @@ class OfficeTable(RobotEnv_revised):
         grip_velp=np.array(grip_velp)*300*self.senstive
         gripper_state=np.array(gripper_state)*100*self.senstive
         # gripper_vel=np.array(gripper_vel)*100
+        objects_rel_pos_reciprocal=np.array(1/(np.array(objects_rel_pos)*10+1e-6))
         objects_rel_pos=np.array(objects_rel_pos)*100*self.senstive
+        # objects_rel_pos_reciprocal=np.array(1/(objects_rel_pos+1e-6))
         objects_rel_pos2target=np.array(objects_rel_pos2target)*100*self.senstive
         gripper_hight=np.array([grip_pos[2]-0.418])*100*self.senstive
-        obs = np.concatenate(
-            [
+        _obs=[
                 # grip_pos,
                 gripper_state,
                 grip_velp,
                 gripper_hight
                 # gripper_vel,
-            ] 
-            # + list(map(lambda x:x.ravel(),objects_pos))
-            # + list(map(lambda x:x.ravel(),objects_rot))
-            # + list(map(lambda x:x.ravel(),objects_velp))
-            # + list(map(lambda x:x.ravel(),objects_velr))
-            + list(map(lambda x:x.ravel(),objects_rel_pos))
-            + list(map(lambda x:x.ravel(),objects_rel_pos2target))
+            ] + \
+            list(map(lambda x:x.ravel(),objects_rel_pos)) + \
+            list(map(lambda x:x.ravel(),objects_rel_pos2target))
+        if self.posrel_reciprocal:
+            _obs+=list(map(lambda x:x.ravel(),objects_rel_pos_reciprocal))
+            print("objects_rel_pos_reciprocal:",objects_rel_pos_reciprocal)
+            print("objects_rel_pos:",objects_rel_pos)
+        obs = np.concatenate(
+            _obs
         )
         # print("grip_velp",grip_velp)
         # print("gripper_state",gripper_state)
@@ -350,7 +355,8 @@ class OfficeTable(RobotEnv_revised):
         # print('leng',leng)
         if grip_pos[0]>1.52 or grip_pos[0]<0.96 or grip_pos[1]<0.15 or grip_pos[1]>1.15 or grip_pos[2]<0.41 or grip_pos[2]>0.8 or leng>0.57:
             done=True
-        if grip_pos[2]<0.418: # collision with table
+        # print(grip_pos[2])
+        if grip_pos[2]<0.421: # collision with table
             done=True
         # print("grip_pos",grip_pos)
         
