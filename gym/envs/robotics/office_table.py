@@ -322,8 +322,8 @@ class OfficeTable(RobotEnv_revised):
             list(map(lambda x:x.ravel(),objects_rel_pos2target))
         if self.posrel_reciprocal:
             _obs+=list(map(lambda x:x.ravel(),objects_rel_pos_reciprocal))
-            print("objects_rel_pos_reciprocal:",objects_rel_pos_reciprocal)
-            print("objects_rel_pos:",objects_rel_pos)
+            # print("objects_rel_pos_reciprocal:",objects_rel_pos_reciprocal)
+            # print("objects_rel_pos:",objects_rel_pos)
         obs = np.concatenate(
             _obs
         )
