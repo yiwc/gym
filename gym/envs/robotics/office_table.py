@@ -442,8 +442,8 @@ class OfficeTable(RobotEnv_revised):
         return super(OfficeTable, self).render(mode, width, height)
 
 class OfficeTableReach(OfficeTable):
-    def __init__(self, model_path, n_substeps, gripper_extra_height, block_gripper, has_object, target_in_the_air, target_offset, obj_range, target_range, distance_threshold, initial_qpos, reward_type, target_objects, all_objects, senstive=1, action_scale=1, posrel_reciprocal=False):
-        super().__init__(model_path, n_substeps, gripper_extra_height, block_gripper, has_object, target_in_the_air, target_offset, obj_range, target_range, distance_threshold, initial_qpos, reward_type, target_objects, all_objects, senstive=senstive, action_scale=action_scale, posrel_reciprocal=posrel_reciprocal)
+    def __init__(self, model_path, n_substeps, gripper_extra_height, block_gripper, has_object, target_in_the_air, target_offset, obj_range, target_range, distance_threshold, initial_qpos, reward_type, target_objects, all_objects, senstive=1, action_scale=1, reward_scale=1,posrel_reciprocal=False):
+        super().__init__(model_path, n_substeps, gripper_extra_height, block_gripper, has_object, target_in_the_air, target_offset, obj_range, target_range, distance_threshold, initial_qpos, reward_type, target_objects, all_objects, senstive=senstive, action_scale=action_scale, posrel_reciprocal=posrel_reciprocal,reward_scale=reward_scale)
         assert len(self.target_objects)==1,"can only reach to one object"
 
     def compute_reward(self):
@@ -451,3 +451,4 @@ class OfficeTableReach(OfficeTable):
         obj_pos= self.sim.data.get_site_xpos("object{}".format(self.target_objects))
         dis_grip2obj= pos_distance(grip_pos,obj_pos)
         
+        return  -dis_grip2obj*self.reward_scale
