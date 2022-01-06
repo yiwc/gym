@@ -133,7 +133,8 @@ class OfficeTable(RobotEnv_revised):
         all_objects,
         senstive=1, # senstive=1->~1cm trigger max activation. Senstive=2, ~0.5cm trigger max activation. Senstive=3, ~0.33cm trigger max activateiton.
         action_scale=1, # 1 normal speed, 0.1 slow speed of action
-        posrel_reciprocal=False
+        posrel_reciprocal=False,
+        reward_scale=1, # 10, scale up the reward
     ):
         """Initializes a new Fetch environment.
 
@@ -166,6 +167,7 @@ class OfficeTable(RobotEnv_revised):
         self.senstive=senstive
         self.action_scale=action_scale
         self.posrel_reciprocal=posrel_reciprocal
+        self.reward_scale=reward_scale
 
         print('info created: \n\nsenstive={senstive}, \n\ntarget_objects={target_objects}, \n\nrandom_check={random_check},\n\n action_scale={action_scale}\n\n posrel_reciprocal={posrel_reciprocal}!!!!\n\n'.format(target_objects=target_objects,senstive=senstive,random_check=np.random.rand(),action_scale=action_scale,posrel_reciprocal=posrel_reciprocal))
 
@@ -184,7 +186,7 @@ class OfficeTable(RobotEnv_revised):
             ]
         
 
-        self.targets_valid_position=[
+        self.targets_valid_position=[ # the three plates on the table
             [1.4, 0.9, 0.425], # target for id0 obj- red obj
             [1.4, 0.7, 0.425], # target for id1 obj - green obj
             [1.4, 0.5, 0.425]  # target for id2 obj- blue obj
@@ -201,7 +203,7 @@ class OfficeTable(RobotEnv_revised):
     # ----------------------------
 
     def compute_reward(self):
-        scale=1
+        scale=self.reward_scale
 
         base_reward=1
         # stage
@@ -221,10 +223,10 @@ class OfficeTable(RobotEnv_revised):
                 reward_reaching_obj=-dis_grip2obj
                 reward_reaching_target=-dis_obj2target
 
-                reward=finished_stage*2+2*reward_reaching_obj+2*reward_reaching_target
+                reward=finished_stage+reward_reaching_obj+reward_reaching_target
                 # return 
             else: # achieved the final goal already, the finished_stage is 1 bigger than as usual
-                reward = finished_stage*2
+                reward = finished_stage
                 # return 
             
         else:
@@ -414,8 +416,8 @@ class OfficeTable(RobotEnv_revised):
         goal=self.target_objects # "RGB" or "RG" or "R" or "B" ...
         return goal
 
-    def _is_success(self, achieved_goal, desired_goal):
-        return achieved_goal==desired_goal
+    # def _is_success(self, achieved_goal, desired_goal):
+    #     return achieved_goal==desired_goal
 
     def _env_setup(self, initial_qpos):
         for name, value in initial_qpos.items():
@@ -438,3 +440,14 @@ class OfficeTable(RobotEnv_revised):
 
     def render(self, mode="human", width=500, height=500):
         return super(OfficeTable, self).render(mode, width, height)
+
+class OfficeTableReach(OfficeTable):
+    def __init__(self, model_path, n_substeps, gripper_extra_height, block_gripper, has_object, target_in_the_air, target_offset, obj_range, target_range, distance_threshold, initial_qpos, reward_type, target_objects, all_objects, senstive=1, action_scale=1, posrel_reciprocal=False):
+        super().__init__(model_path, n_substeps, gripper_extra_height, block_gripper, has_object, target_in_the_air, target_offset, obj_range, target_range, distance_threshold, initial_qpos, reward_type, target_objects, all_objects, senstive=senstive, action_scale=action_scale, posrel_reciprocal=posrel_reciprocal)
+        assert len(self.target_objects)==1,"can only reach to one object"
+
+    def compute_reward(self):
+        grip_pos = self.sim.data.get_site_xpos("robot0:grip")
+        obj_pos= self.sim.data.get_site_xpos("object{}".format(self.target_objects))
+        dis_grip2obj= pos_distance(grip_pos,obj_pos)
+        

@@ -9,7 +9,8 @@ MODEL_XML_PATH = os.path.join("fetch", "office_table.xml")
 
 
 class OfficeTablePickAndPlaceFIRLEnv(office_table.OfficeTable, utils.EzPickle):
-    def __init__(self, reward_type="sparse", target_objects="RGB",senstive=1,action_scale=1,posrel_reciprocal=False):
+    def __init__(self, reward_type="sparse", target_objects="RGB",senstive=1,action_scale=1,posrel_reciprocal=False,
+            reward_scale=1):
         initial_qpos = {
             "robot0:slide0": 0.405,
             "robot0:slide1": 0.48,
@@ -39,27 +40,31 @@ class OfficeTablePickAndPlaceFIRLEnv(office_table.OfficeTable, utils.EzPickle):
             all_objects="RGB",
             senstive=senstive,
             action_scale=action_scale,
-            posrel_reciprocal=posrel_reciprocal
+            posrel_reciprocal=posrel_reciprocal,
+            reward_scale=reward_scale,
         )
         utils.EzPickle.__init__(self, reward_type=reward_type)
 
 
 class OfficeTableRPickAndPlaceFIRLEnv(OfficeTablePickAndPlaceFIRLEnv):
-    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False):
+    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False,reward_scale=1):
         target_objects="R"
-        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal)
+        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal,
+            reward_scale=reward_scale)
 
 class OfficeTableGPickAndPlaceFIRLEnv(OfficeTablePickAndPlaceFIRLEnv):
-    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False):
+    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False,reward_scale=1):
         target_objects="G"
-        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal)
+        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal,reward_scale=reward_scale)
 
 class OfficeTableBPickAndPlaceFIRLEnv(OfficeTablePickAndPlaceFIRLEnv):
-    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False):
+    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False,reward_scale=1):
         target_objects="B"
-        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal)
+        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal,reward_scale=reward_scale)
 
 class OfficeTableRGBPickAndPlaceFIRLEnv(OfficeTablePickAndPlaceFIRLEnv):
-    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False):
+    def __init__(self, reward_type="sparse",senstive=1,action_scale=1,posrel_reciprocal=False,reward_scale=1):
         target_objects="RGB"
-        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal)
+        super().__init__(reward_type=reward_type, target_objects=target_objects,senstive=senstive,action_scale=action_scale,posrel_reciprocal=posrel_reciprocal,reward_scale=reward_scale)
+
+
