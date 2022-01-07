@@ -340,7 +340,7 @@ class OfficeTable(RobotEnv_revised):
                 object_hover_pos=objects_pos[id].copy()
                 object_hover_pos+=self.configs_reach_hovering_relative
                 achieveds[id]=pos_distance(object_hover_pos-grip_pos,np.array([0,0,0]))<self.reach_goal_threshold
-                logger.info('relate pos={}, dis={}'.format(object_hover_pos-grip_pos,pos_distance(object_hover_pos-grip_pos,np.array([0,0,0]))))
+                # logger.info('relate pos={}, dis={}'.format(object_hover_pos-grip_pos,pos_distance(object_hover_pos-grip_pos,np.array([0,0,0]))))
             elif self.task==TASK_NEAR_PICK:
                 achieveds[id]=(objects_pos[id][2]-0.425)>self.configs_nearpick_height
             else:
@@ -351,9 +351,6 @@ class OfficeTable(RobotEnv_revised):
                 logger.info("achieveds={}".format(achieveds))
             self.achieved_goal = self.achieved_goal+obj_color if (achieveds[id] and not obj_color in self.achieved_goal) else self.achieved_goal
 
-        # print("achieved_goal= {} , goal={}".format(self.achieved_goal,self.goal))
-        # print("objects_rel_pos2target=",objects_rel_pos2target)
-        # print('\n')
         grip_velp=np.array(grip_velp)*300*self.senstive
         gripper_state=np.array(gripper_state)*100*self.senstive
         # gripper_vel=np.array(gripper_vel)*100
@@ -373,8 +370,6 @@ class OfficeTable(RobotEnv_revised):
             list(map(lambda x:x.ravel(),objects_rel_pos2target))
         if self.posrel_reciprocal:
             _obs+=list(map(lambda x:x.ravel(),objects_rel_pos_reciprocal))
-            # print("objects_rel_pos_reciprocal:",objects_rel_pos_reciprocal)
-            # print("objects_rel_pos:",objects_rel_pos)
         obs = np.concatenate(
             _obs
         )
@@ -445,7 +440,6 @@ class OfficeTable(RobotEnv_revised):
                 2:self.init_states['pos_c'],
             }
             indexid=sequence.index(self.target_objects)
-            print("index",indexid)
             self.sim.set_state(states[indexid])
         else:
             self.sim.set_state(self.init_states['pos_default'])
