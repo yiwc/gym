@@ -1,27 +1,32 @@
+from logging import debug
+from re import DEBUG
 import gym
 from rl_helper.keyboard import kbinteractor
 import time
 from rl_helper import fps
+
+from gym.envs.robotics.office_table import TASK_NEAR_PICK, TASK_PICK_PLACE, TASK_REACH
 if __name__=="__main__":
 
-    env = gym.make('OfficeTableB-v1',senstive=2,action_scale=1,posrel_reciprocal=True,reward_scale=10)
+    # env = gym.make('OfficeTable-v1',target_objects="G",posrel_reciprocal=True,reward_scale=1,task=TASK_NEAR_PICK,DEBUG=True)
+    env = gym.make('OfficeTable-v1',target_objects="G",posrel_reciprocal=True,reward_scale=1,task=TASK_REACH,DEBUG=True)
 
     # print(env.action_space)
     # print(env.observation_space)
-    # print(env.action_space)
-    # env.reset()
-    # fps(env)
+    # print(enhyv.action_space)
+    # env.reset()hhhh
+    # fhhps(hhyenv)
 
-    # env.rhheset()
-    # for i in range(int(1e8)):
+    # env.reset()hhy
+    # for i hin hrhyanyghhhhe(int(1e8)):
     #     obs,rew,done,info=env.step(env.action_space.sample())
     #     print("reward:",rew)
-    #     if rew==0:
-    #         print(rew)
+    #     if rew==0:hhhhhhhh
+    #         pryyint(rew)
     #         pass
     #     time.sleep(0.01)
     #     env.render()  
-    #     if i % 10 ==0:
+    #     hhif i % 10 ==0:
     #         env.reset()
 
     kbinteractor(env,key2action={
