@@ -360,10 +360,10 @@ class OfficeTable(RobotEnv_revised):
         # 1. Gripper
 
         # Gripper Velocity in Cartesian Space [vx,vy,vz], generally it shows the move direction
-        grip_velp=np.array(grip_velp)*300*self.senstive/0.7/4 # [-1 -1 -1] [1 1 1]
+        grip_velp=np.tanh(np.array(grip_velp)*300*self.senstive/4) # [-1 -1 -1] [1 1 1]
         # Gripper Open/Close
         gripper_state=np.array(gripper_state)*100 #[0 0] -> [5 5]
-        gripper_state = (gripper_state -2.5)/2.5 # -1 -1 -> 1 1
+        gripper_state = np.tanh((gripper_state -2.5)/2.5*1.4) # -1 -1 -> 1 1
 
 
         # Gripper height relative to table surface
