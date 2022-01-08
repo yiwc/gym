@@ -234,7 +234,7 @@ class OfficeTable(RobotEnv_revised):
         obj_pos= self.sim.data.get_site_xpos("object{}".format(target_obj_id))
         # obj_pos[2]+=0.03
         dis_grip2obj= pos_distance(grip_pos,obj_pos+self.configs_reach_hovering_relative)
-        return  -dis_grip2obj*self.reward_scale
+        return  (0.5-dis_grip2obj)*self.reward_scale*10
 
     def compute_reward_pickplace(self):
         scale=self.reward_scale
@@ -284,7 +284,7 @@ class OfficeTable(RobotEnv_revised):
         )  # ensure that we don't change the action outside of this scope
         pos_ctrl, gripper_ctrl = action[:3], action[3]
 
-        pos_ctrl *= 0.05*self.action_scale*0.3  # limit maximum change in position
+        pos_ctrl *= 0.05*self.action_scale*0.4  # limit maximum change in position
         rot_ctrl = [
             1.0,
             0.0,
@@ -383,21 +383,39 @@ class OfficeTable(RobotEnv_revised):
         # print("gripper_hight",gripper_hight)
         return obs.copy()
 
-    def _get_done(self):
-        pass
-        # finish all goal
-        done= (not self.goal.startswith(self.achieved_goal)) or self.goal==self.achieved_goal
-        
-        grip_pos = self.sim.data.get_site_xpos("robot0:grip")
+    def done_finish_all_goal(self):
+        # 
+        return (not self.goal.startswith(self.achieved_goal)) or self.goal==self.achieved_goal
 
-        # go beyond bounder
+    def done_beyond_bounder(self):
+        grip_pos = self.sim.data.get_site_xpos("robot0:grip")
         leng=pos_distance(grip_pos[:2],np.array([1,0.75]))
         if grip_pos[0]>1.52 or grip_pos[0]<0.96 or grip_pos[1]<0.15 or grip_pos[1]>1.15 or grip_pos[2]<0.41 or grip_pos[2]>0.8 or leng>0.57:
-            done=True
-        # collision with table
+            return True
+        else:
+            return False
+    
+    def done_collision_with_table(self):
+        grip_pos = self.sim.data.get_site_xpos("robot0:grip")
         if grip_pos[2]<0.421: 
-            done=True
-        return done
+            return True
+        else:
+            return False
+            
+
+    def _get_done(self):
+        pass
+
+        d_beyond=self.done_beyond_bounder()
+        d_table_coli=self.done_collision_with_table()
+        d_finishall=self.done_finish_all_goal()
+        default=d_beyond or d_table_coli or d_finishall
+        done_dict={
+            TASK_PICK_PLACE:default,
+            TASK_REACH: d_beyond or d_table_coli  # should give all postive reward
+        }
+
+        return done_dict[self.task]
 
     def step(self, action):
         action = np.clip(action, self.action_space.low, self.action_space.high)

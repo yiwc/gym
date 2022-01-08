@@ -9,11 +9,11 @@ from gym.envs.robotics.office_table import TASK_NEAR_PICK, TASK_PICK_PLACE, TASK
 if __name__=="__main__":
 
     # env = gym.make('OfficeTable-v1',target_objects="G",posrel_reciprocal=True,reward_scale=1,task=TASK_NEAR_PICK,DEBUG=True)
-    env = gym.make('OfficeTable-v1',target_objects="G",posrel_reciprocal=True,reward_scale=1,task=TASK_REACH,DEBUG=True)
+    env = gym.make('OfficeTable-v1',target_objects="G",task=TASK_REACH)
 
     # print(env.action_space)
     # print(env.observation_space)
-    # print(enhyv.action_space)
+    # print(enhhhhhhhhhhhhhhhhhhhyv.action_space)
     # env.reset()hhhh
     # fhhps(hhyenv)
 
