@@ -136,6 +136,7 @@ class OfficeTable(RobotEnv_revised):
         task=TASK_PICK_PLACE,
         reach_goal_threshold=0.05, # less than 1cm, we call it reach
         DEBUG=False,
+        obs_only_target_color=False
         # obs_using_tanh=True
     ):
         """Initializes a new Fetch environment.
@@ -170,6 +171,7 @@ class OfficeTable(RobotEnv_revised):
         self.task=task
         # self.obs_using_tanh=obs_using_tanh
         self.DEBUG=DEBUG
+        self.obs_only_target_color=obs_only_target_color
 
         if self.task==TASK_REACH:
             assert len(self.target_objects)==1,"can only reach one objects, please set target_objects to one color, eg. target_objects=\"R\""
@@ -322,6 +324,7 @@ class OfficeTable(RobotEnv_revised):
         gripper_vel = (
             robot_qvel[-2:] * dt 
         )  
+
         objects_pos=[None for i in range(len(self.all_objects))]
         objects_rot=[None for i in range(len(self.all_objects))]
         objects_velp=[None for i in range(len(self.all_objects))]
@@ -358,6 +361,10 @@ class OfficeTable(RobotEnv_revised):
                 logger.info("achieveds={}".format(achieveds))
             self.achieved_goal = self.achieved_goal+obj_color if (achieveds[id] and not obj_color in self.achieved_goal) else self.achieved_goal
 
+        # if self.obs_only_target_color:
+
+
+
         def _reciprocal(dist):# make sure num in [-1,1], dm
             return np.tanh(np.array(1/(np.array(dist)*5+1e-6)))
 
@@ -391,6 +398,13 @@ class OfficeTable(RobotEnv_revised):
         # Reciprocal
         objects_rel_pos2target_reciprocal=_reciprocal(objects_rel_pos2target)
 
+        if self.obs_only_target_color:
+            allow_id=[self.obj_color2id[color] for color in self.target_objects]
+            objects_rel_pos=objects_rel_pos[allow_id,:]
+            objects_rel_pos_reciprocal=objects_rel_pos_reciprocal[allow_id,:]
+            objects_rel_pos2target=objects_rel_pos2target[allow_id,:]
+            objects_rel_pos2target_reciprocal=objects_rel_pos2target_reciprocal[allow_id,:]
+            objects_obs_len=4
 
         OBS_gripper_state="gripper_state" 
         OBS_gripper_velp="gripper_velp" 
@@ -402,7 +416,7 @@ class OfficeTable(RobotEnv_revised):
         OBS_objects_rel_pos2target_reciprocal="objects_rel_pos2target_reciprocal"
         od=obs_dict={
             OBS_gripper_state:[gripper_state],
-            OBS_gripper_velp:[grip_velp],
+            # OBS_gripper_velp:[grip_velp],
             OBS_gripper_height:[gripper_height],
             OBS_gripper_height_reciprocal:[gripper_height_reciprocal],
             OBS_objects_rel_pos:list(map(lambda x:x.ravel(),objects_rel_pos)),
@@ -410,6 +424,7 @@ class OfficeTable(RobotEnv_revised):
             OBS_objects_rel_pos2target:list(map(lambda x:x.ravel(),objects_rel_pos2target)),
             OBS_objects_rel_pos2target_reciprocal:list(map(lambda x:x.ravel(),objects_rel_pos2target_reciprocal)),
         }
+        assert len(list(filter(lambda x: "objects" in x, od.keys())))==objects_obs_len
         if self.DEBUG:
             for k in od.keys():
                 print("- {}:\n{} \n".format(k,np.around(od[k],2)))
