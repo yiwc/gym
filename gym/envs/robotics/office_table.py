@@ -211,7 +211,9 @@ class OfficeTable(RobotEnv_revised):
             TASK_REACH:self.compute_reward_reach,
             TASK_NEAR_PICK:self.compute_reward_nearpick,
         }
-        return comute_reward_dict[self.task]()
+        rew=comute_reward_dict[self.task]()
+        assert rew<=1, "please make sure reward each step<=1, the value prediction would only support 256 maximal"
+        return rew
 
     def compute_reward_nearpick(self):
 
@@ -237,7 +239,7 @@ class OfficeTable(RobotEnv_revised):
         obj_pos= self.sim.data.get_site_xpos("object{}".format(target_obj_id))
         # obj_pos[2]+=0.03
         dis_grip2obj= pos_distance(grip_pos,obj_pos+self.configs_reach_hovering_relative)
-        return  (0.5-dis_grip2obj)*self.reward_scale*10
+        return  (0.5-dis_grip2obj)*self.reward_scale*2
 
     def compute_reward_pickplace(self):
         scale=self.reward_scale
