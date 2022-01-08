@@ -397,7 +397,8 @@ class OfficeTable(RobotEnv_revised):
         objects_rel_pos2target=np.tanh(objects_rel_pos2target) # Compulsary tanh # [+-1 +-1 +-1]
         # Reciprocal
         objects_rel_pos2target_reciprocal=_reciprocal(objects_rel_pos2target)
-
+        
+        objects_obs_len=4
         if self.obs_only_target_color:
             allow_id=[self.obj_color2id[color] for color in self.target_objects]
             objects_rel_pos=objects_rel_pos[allow_id,:]
