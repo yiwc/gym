@@ -29,8 +29,8 @@ except ImportError as e:
     )
 
 DEFAULT_SIZE = 500
-OBS_LOW=-2
-OBS_HIGH=2
+OBS_LOW=-1
+OBS_HIGH=1
 
 class RobotEnv_revised(gym.Env):
     def __init__(self, model_path, initial_qpos, n_actions, n_substeps, task):
@@ -117,6 +117,7 @@ TASK_PLACE="near_place"
 TASK_PICK_PLACE="pick_place"
 OfficeTableTasks=[TASK_REACH,TASK_NEAR_PICK,TASK_PLACE,TASK_PICK_PLACE]
 logger=logging.getLogger("OfficeTable")
+TABLE_HEIGHT=0.421
 class OfficeTable(RobotEnv_revised):
     """Superclass for all Fetch environments."""
 
@@ -127,14 +128,15 @@ class OfficeTable(RobotEnv_revised):
         block_gripper=False,
         gripper_extra_height=0.2,
         target_objects="RGB",
-        senstive=0.5, # senstive=1->~1cm trigger max activation. Senstive=2, ~0.5cm trigger max activation. Senstive=3, ~0.33cm trigger max activateiton.
+        senstive=1, # senstive=1->~1cm trigger max activation. Senstive=2, ~0.5cm trigger max activation. Senstive=3, ~0.33cm trigger max activateiton.
         action_scale=1, # 1 normal speed, 0.1 slow speed of action
-        posrel_reciprocal=False,
+        obs_reciprocal=False,
         reward_scale=1, # 10, scale up the reward
         model_path=os.path.join("fetch", "office_table.xml"),
         task=TASK_PICK_PLACE,
         reach_goal_threshold=0.05, # less than 1cm, we call it reach
         DEBUG=False,
+        # obs_using_tanh=True
     ):
         """Initializes a new Fetch environment.
 
@@ -162,10 +164,11 @@ class OfficeTable(RobotEnv_revised):
         self.achieved_goal=""
         self.senstive=senstive
         self.action_scale=action_scale
-        self.posrel_reciprocal=posrel_reciprocal
+        self.obs_reciprocal=obs_reciprocal
         self.reward_scale=reward_scale
         self.reach_goal_threshold=reach_goal_threshold
         self.task=task
+        # self.obs_using_tanh=obs_using_tanh
         self.DEBUG=DEBUG
 
         if self.task==TASK_REACH:
@@ -351,36 +354,75 @@ class OfficeTable(RobotEnv_revised):
                 logger.info("achieveds={}".format(achieveds))
             self.achieved_goal = self.achieved_goal+obj_color if (achieveds[id] and not obj_color in self.achieved_goal) else self.achieved_goal
 
-        grip_velp=np.array(grip_velp)*300*self.senstive
-        gripper_state=np.array(gripper_state)*100*self.senstive
-        # gripper_vel=np.array(gripper_vel)*100
-        objects_rel_pos_reciprocal=np.array(1/(np.array(objects_rel_pos)*10+1e-6))
-        objects_rel_pos=np.array(objects_rel_pos)*100*self.senstive
+        def _reciprocal(dist):# make sure num in [-1,1], dm
+            return np.tanh(np.array(1/(np.array(dist)*5+1e-6)))
+
+        # 1. Gripper
+
+        # Gripper Velocity in Cartesian Space [vx,vy,vz], generally it shows the move direction
+        grip_velp=np.array(grip_velp)*300*self.senstive/0.7/4 # [-1 -1 -1] [1 1 1]
+        # Gripper Open/Close
+        gripper_state=np.array(gripper_state)*100 #[0 0] -> [5 5]
+        gripper_state = (gripper_state -2.5)/2.5 # -1 -1 -> 1 1
+
+
+        # Gripper height relative to table surface
+        gripper_height=np.array([grip_pos[2]-TABLE_HEIGHT])*10*self.senstive
+        gripper_height=np.tanh(gripper_height) # Compulsary tanh
+        # Reciprocal of Gripper Height
+        gripper_height_reciprocal=_reciprocal(gripper_height)
+
+
+        # 2. Gripper - Objs
+        # Relative Position between Object and Gripper
+        objects_rel_pos=np.array(objects_rel_pos)*10*self.senstive # [+-3 +-3 0~10] x 3 objects, /dm
+        objects_rel_pos=np.tanh(objects_rel_pos) # Compulsary tanh # [+-1 +-1 +-1]
+        # Reciprocal Relative Position between Object and Gripper
+        objects_rel_pos_reciprocal=_reciprocal(objects_rel_pos) # Compulsary tanh
+
+        # 3. Objs - Targets
         # objects_rel_pos_reciprocal=np.array(1/(objects_rel_pos+1e-6))
-        objects_rel_pos2target=np.array(objects_rel_pos2target)*100*self.senstive
-        gripper_hight=np.array([grip_pos[2]-0.418])*100*self.senstive
-        _obs=[
-                # grip_pos,
-                gripper_state,
-                grip_velp,
-                gripper_hight
-                # gripper_vel,
-            ] + \
-            list(map(lambda x:x.ravel(),objects_rel_pos)) + \
-            list(map(lambda x:x.ravel(),objects_rel_pos2target))
-        if self.posrel_reciprocal:
-            _obs+=list(map(lambda x:x.ravel(),objects_rel_pos_reciprocal))
-        obs = np.concatenate(
-            _obs
-        )
-        # print("grip_velp",grip_velp)
-        # print("gripper_state",gripper_state)
-        # print("gripper_vel",gripper_vel)
-        # print("objects_rel_pos",objects_rel_pos)
-        # print("objects_rel_pos2target",objects_rel_pos2target)
-        obs = np.tanh(obs)*2
-        # obs = np.clip(obs,OBS_LOW,OBS_HIGH)
-        # print("gripper_hight",gripper_hight)
+        objects_rel_pos2target=np.array(objects_rel_pos2target)*10*self.senstive
+        objects_rel_pos2target=np.tanh(objects_rel_pos2target) # Compulsary tanh # [+-1 +-1 +-1]
+        # Reciprocal
+        objects_rel_pos2target_reciprocal=_reciprocal(objects_rel_pos2target)
+
+
+        OBS_gripper_state="gripper_state" 
+        OBS_gripper_velp="gripper_velp" 
+        OBS_gripper_height="gripper_height"
+        OBS_objects_rel_pos="objects_rel_pos"
+        OBS_objects_rel_pos2target="objects_rel_pos2target"
+        OBS_objects_rel_pos_reciprocal="objects_rel_pos_reciprocal"
+        OBS_gripper_height_reciprocal="gripper_height_reciprocal"
+        OBS_objects_rel_pos2target_reciprocal="objects_rel_pos2target_reciprocal"
+        od=obs_dict={
+            OBS_gripper_state:[gripper_state],
+            OBS_gripper_velp:[grip_velp],
+            OBS_gripper_height:[gripper_height],
+            OBS_gripper_height_reciprocal:[gripper_height_reciprocal],
+            OBS_objects_rel_pos:list(map(lambda x:x.ravel(),objects_rel_pos)),
+            OBS_objects_rel_pos_reciprocal:list(map(lambda x:x.ravel(),objects_rel_pos_reciprocal)),
+            OBS_objects_rel_pos2target:list(map(lambda x:x.ravel(),objects_rel_pos2target)),
+            OBS_objects_rel_pos2target_reciprocal:list(map(lambda x:x.ravel(),objects_rel_pos2target_reciprocal)),
+        }
+        if self.DEBUG:
+            for k in od.keys():
+                print("- {}:\n{} \n".format(k,np.around(od[k],2)))
+        
+        _obs=[]
+        for k in od.keys():
+
+            if "reciprocal" in k:
+                if self.obs_reciprocal:
+                    _obs+=od[k]
+                else:
+                    pass
+            else:
+                _obs+=od[k]
+            
+
+        obs = np.concatenate(_obs)
         return obs.copy()
 
     def done_finish_all_goal(self):
@@ -397,7 +439,7 @@ class OfficeTable(RobotEnv_revised):
     
     def done_collision_with_table(self):
         grip_pos = self.sim.data.get_site_xpos("robot0:grip")
-        if grip_pos[2]<0.421: 
+        if grip_pos[2]<TABLE_HEIGHT: 
             return True
         else:
             return False

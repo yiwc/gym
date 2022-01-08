@@ -8,10 +8,10 @@ from rl_helper import fps
 from gym.envs.robotics.office_table import TASK_NEAR_PICK, TASK_PICK_PLACE, TASK_REACH
 if __name__=="__main__":
 
-    # env = gym.make('OfficeTable-v1',target_objects="G",posrel_reciprocal=True,reward_scale=1,task=TASK_NEAR_PICK,DEBUG=True)
-    env = gym.make('OfficeTable-v1',target_objects="G",task=TASK_REACH)
+    # env = gym.make('OfficeTable-v1',target_objects="G",obs_reciprocal=True,reward_scale=1,task=TASK_NEAR_PICK,DEBUG=True)
+    env = gym.make('OfficeTable-v1',target_objects="G",task=TASK_REACH,DEBUG=False)
 
-    # print(env.action_space)
+    # print(env.action_space)b
     # print(env.observation_space)
     # print(enhhhhhhhhhhhhhhhhhhhyv.action_space)
     # env.reset()hhhh
