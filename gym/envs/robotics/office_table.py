@@ -242,8 +242,9 @@ class OfficeTable(RobotEnv_revised):
         obj_pos= self.sim.data.get_site_xpos("object{}".format(target_obj_id))
         # obj_pos[2]+=0.03
         dis_grip2obj= pos_distance(grip_pos,obj_pos+self.configs_reach_hovering_relative)
-        rew=(0.5-dis_grip2obj)*self.reward_scale*2
-        return  np.clip(rew,0,1)
+        # rew=(0.5-dis_grip2obj)*self.reward_scale*2
+        rew=self._reciprocal(dis_grip2obj*10)
+        return  np.clip(rew,0,1)*self.reward_scale
 
     def compute_reward_pickplace(self):
         scale=self.reward_scale
@@ -310,6 +311,10 @@ class OfficeTable(RobotEnv_revised):
         utils.ctrl_set_action(self.sim, action)
         utils.mocap_set_action(self.sim, action)
 
+    @staticmethod
+    def _reciprocal(dist):# make sure num in [-1,1], dm
+        return np.tanh(np.array(1/(np.array(dist)*5+1e-6)))
+
     def _get_obs(self):
         # positions
         grip_pos = self.sim.data.get_site_xpos("robot0:grip")
@@ -365,8 +370,6 @@ class OfficeTable(RobotEnv_revised):
 
 
 
-        def _reciprocal(dist):# make sure num in [-1,1], dm
-            return np.tanh(np.array(1/(np.array(dist)*5+1e-6)))
 
         # 1. Gripper
 
@@ -381,7 +384,7 @@ class OfficeTable(RobotEnv_revised):
         gripper_height=np.array([grip_pos[2]-TABLE_HEIGHT])*10*self.senstive
         gripper_height=np.tanh(gripper_height) # Compulsary tanh
         # Reciprocal of Gripper Height
-        gripper_height_reciprocal=_reciprocal(gripper_height)
+        gripper_height_reciprocal=self._reciprocal(gripper_height)
 
 
         # 2. Gripper - Objs
@@ -389,14 +392,14 @@ class OfficeTable(RobotEnv_revised):
         objects_rel_pos=np.array(objects_rel_pos)*10*self.senstive # [+-3 +-3 0~10] x 3 objects, /dm
         objects_rel_pos=np.tanh(objects_rel_pos) # Compulsary tanh # [+-1 +-1 +-1]
         # Reciprocal Relative Position between Object and Gripper
-        objects_rel_pos_reciprocal=_reciprocal(objects_rel_pos) # Compulsary tanh
+        objects_rel_pos_reciprocal=self._reciprocal(objects_rel_pos) # Compulsary tanh
 
         # 3. Objs - Targets
         # objects_rel_pos_reciprocal=np.array(1/(objects_rel_pos+1e-6))
         objects_rel_pos2target=np.array(objects_rel_pos2target)*10*self.senstive
         objects_rel_pos2target=np.tanh(objects_rel_pos2target) # Compulsary tanh # [+-1 +-1 +-1]
         # Reciprocal
-        objects_rel_pos2target_reciprocal=_reciprocal(objects_rel_pos2target)
+        objects_rel_pos2target_reciprocal=self._reciprocal(objects_rel_pos2target)
         
         objects_obs_len=4
         if self.obs_only_target_color:
